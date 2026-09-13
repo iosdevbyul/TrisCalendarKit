@@ -9,20 +9,25 @@ import Foundation
 
 public struct CalendarConfiguration {
     public var calendar: Calendar
-    public var locale: Locale
-    public var timeZone: TimeZone
+    public var locale: CalendarLocale
+    public var timeZone: CalendarTimeZone
 
     public init(
         calendar: Calendar = .current,
-        locale: Locale = .current,
-        timeZone: TimeZone = .current
+        locale: CalendarLocale = .system,
+        timeZone: CalendarTimeZone = .system
     ) {
-        var configuredCalendar = calendar
-        configuredCalendar.locale = locale
-        configuredCalendar.timeZone = timeZone
-
-        self.calendar = configuredCalendar
+        self.calendar = calendar
         self.locale = locale
         self.timeZone = timeZone
+    }
+
+    var configuredCalendar: Calendar {
+        var calendar = calendar
+
+        calendar.locale = locale.locale
+        calendar.timeZone = timeZone.timeZone
+
+        return calendar
     }
 }
