@@ -184,6 +184,174 @@ struct CalendarGeneratorTests {
             }
         )
     }
+    
+    @Test
+    func generatesSevenDaysForSundayStart() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .sunday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let date = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 15
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 13
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 19
+        )
+
+        let days = generator.makeWeekDays(
+            containing: date
+        )
+
+        #expect(days.count == 7)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
+    
+    @Test
+    func generatesSevenDaysForMondayStart() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .monday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let date = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 15
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 14
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 20
+        )
+
+        let days = generator.makeWeekDays(
+            containing: date
+        )
+
+        #expect(days.count == 7)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
+    
+    @Test
+    func generatesWeekAcrossMonthBoundary() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .sunday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let date = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 1
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 8,
+            day: 30
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 5
+        )
+
+        let days = generator.makeWeekDays(
+            containing: date
+        )
+
+        #expect(days.count == 7)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
+    
+    @Test
+    func generatesWeekAcrossYearBoundary() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .sunday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let date = try makeDate(
+            year: 2026,
+            month: 12,
+            day: 31
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 12,
+            day: 27
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2027,
+            month: 1,
+            day: 2
+        )
+
+        let days = generator.makeWeekDays(
+            containing: date
+        )
+
+        #expect(days.count == 7)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
 }
 
 private func makeDate(
