@@ -12,11 +12,20 @@ struct MonthDayCell: View {
     let calendar: Calendar
     let isSelected: Bool
     let isHighlighted: Bool
+    let style: CalendarStyle
 
     var body: some View {
         ZStack {
             Circle()
                 .fill(backgroundColor)
+
+            if day.isToday && !isSelected {
+                Circle()
+                    .stroke(
+                        style.todayBorderColor,
+                        lineWidth: 1
+                    )
+            }
 
             Text(dayText)
                 .font(.system(size: 14, weight: .medium))
@@ -36,11 +45,11 @@ struct MonthDayCell: View {
 
     private var backgroundColor: Color {
         if isSelected {
-            return .blue
+            return style.selectedBackgroundColor
         }
 
         if isHighlighted {
-            return .green.opacity(0.2)
+            return style.highlightedBackgroundColor
         }
 
         return .clear
@@ -48,13 +57,13 @@ struct MonthDayCell: View {
 
     private var textColor: Color {
         if isSelected {
-            return .white
+            return style.selectedTextColor
         }
 
         if day.isCurrentMonth {
-            return .primary
+            return style.currentMonthTextColor
         }
 
-        return .secondary
+        return style.adjacentMonthTextColor
     }
 }

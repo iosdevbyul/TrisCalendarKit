@@ -15,18 +15,21 @@ public struct MonthCalendarView: View {
     @Binding private var selectedDate: Date?
 
     private let displayedMonth: Date
-
+    private let style: CalendarStyle
+    
     public init(
         displayedMonth: Date,
         selectedDate: Binding<Date?>,
         highlightedDates: Set<Date> = [],
         configuration: CalendarConfiguration = CalendarConfiguration(),
+        style: CalendarStyle = CalendarStyle(),
         onSelectDate: @escaping (Date) -> Void = { _ in }
     ) {
         self.displayedMonth = displayedMonth
         self._selectedDate = selectedDate
         self.highlightedDates = highlightedDates
         self.configuration = configuration
+        self.style = style
         self.onSelectDate = onSelectDate
     }
 
@@ -65,7 +68,8 @@ public struct MonthCalendarView: View {
                         isHighlighted: isHighlighted(
                             day.date,
                             calendar: calendar
-                        )
+                        ),
+                        style: style
                     )
                 }
                 .buttonStyle(.plain)
