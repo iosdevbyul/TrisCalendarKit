@@ -75,4 +75,46 @@ public struct CalendarGenerator {
 
         return days
     }
+    
+    public func makeWeekDays(
+        containing date: Date
+    ) -> [CalendarDay] {
+        let calendar = configuration.configuredCalendar
+
+        guard let weekInterval = calendar.dateInterval(
+            of: .weekOfYear,
+            for: date
+        ) else {
+            return []
+        }
+
+        var days: [CalendarDay] = []
+        var currentDate = weekInterval.start
+
+        for _ in 0..<7 {
+            days.append(
+                CalendarDay(
+                    date: currentDate,
+                    isCurrentMonth: calendar.isDate(
+                        currentDate,
+                        equalTo: date,
+                        toGranularity: .month
+                    ),
+                    isToday: calendar.isDateInToday(currentDate)
+                )
+            )
+
+            guard let nextDate = calendar.date(
+                byAdding: .day,
+                value: 1,
+                to: currentDate
+            ) else {
+                break
+            }
+
+            currentDate = nextDate
+        }
+
+        return days
+    }
 }
