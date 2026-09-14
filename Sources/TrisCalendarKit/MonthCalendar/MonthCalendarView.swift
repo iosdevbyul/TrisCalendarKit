@@ -35,6 +35,7 @@ public struct MonthCalendarView: View {
 
     public var body: some View {
         let calendar = configuration.configuredCalendar
+
         let generator = CalendarGenerator(
             configuration: configuration
         )
@@ -43,36 +44,42 @@ public struct MonthCalendarView: View {
             for: displayedMonth
         )
 
-        LazyVGrid(
-            columns: Array(
-                repeating: GridItem(
-                    .flexible(),
-                    spacing: 0
+        VStack(spacing: 12) {
+            MonthWeekdayHeader(
+                calendar: calendar
+            )
+
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(
+                        .flexible(),
+                        spacing: 0
+                    ),
+                    count: 7
                 ),
-                count: 7
-            ),
-            spacing: 8
-        ) {
-            ForEach(days) { day in
-                Button {
-                    selectedDate = day.date
-                    onSelectDate(day.date)
-                } label: {
-                    MonthDayCell(
-                        day: day,
-                        calendar: calendar,
-                        isSelected: isSelected(
-                            day.date,
-                            calendar: calendar
-                        ),
-                        isHighlighted: isHighlighted(
-                            day.date,
-                            calendar: calendar
-                        ),
-                        style: style
-                    )
+                spacing: 8
+            ) {
+                ForEach(days) { day in
+                    Button {
+                        selectedDate = day.date
+                        onSelectDate(day.date)
+                    } label: {
+                        MonthDayCell(
+                            day: day,
+                            calendar: calendar,
+                            isSelected: isSelected(
+                                day.date,
+                                calendar: calendar
+                            ),
+                            isHighlighted: isHighlighted(
+                                day.date,
+                                calendar: calendar
+                            ),
+                            style: style
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
     }
