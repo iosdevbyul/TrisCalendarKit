@@ -49,6 +49,12 @@ public struct MonthCalendarView: View {
         let days = generator.makeMonthDays(
             for: displayedMonth
         )
+        
+        let normalizedHighlightedDates = Set(
+            highlightedDates.map {
+                calendar.startOfDay(for: $0)
+            }
+        )
 
         VStack(spacing: 12) {
             MonthCalendarHeader(
@@ -100,7 +106,8 @@ public struct MonthCalendarView: View {
                             ),
                             isHighlighted: isHighlighted(
                                 day.date,
-                                calendar: calendar
+                                calendar: calendar,
+                                highlightedDates: normalizedHighlightedDates
                             ),
                             style: style
                         )
@@ -127,14 +134,12 @@ public struct MonthCalendarView: View {
 
     private func isHighlighted(
         _ date: Date,
-        calendar: Calendar
+        calendar: Calendar,
+        highlightedDates: Set<Date>
     ) -> Bool {
-        highlightedDates.contains {
-            calendar.isDate(
-                $0,
-                inSameDayAs: date
-            )
-        }
+        highlightedDates.contains(
+            calendar.startOfDay(for: date)
+        )
     }
     
     private func moveMonth(
