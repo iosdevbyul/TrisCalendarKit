@@ -17,6 +17,7 @@ public struct MonthCalendarView: View {
     @State private var displayedMonth: Date
     private let style: CalendarStyle
     private let adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior
+    private let onDisplayedMonthChange: (Date) -> Void
     
     public init(
         displayedMonth: Date,
@@ -25,7 +26,8 @@ public struct MonthCalendarView: View {
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
         adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior = .navigate,
-        onSelectDate: @escaping (Date) -> Void = { _ in }
+        onSelectDate: @escaping (Date) -> Void = { _ in },
+        onDisplayedMonthChange: @escaping (Date) -> Void = { _ in }
     ) {
         self._displayedMonth = State(
             initialValue: displayedMonth
@@ -36,6 +38,7 @@ public struct MonthCalendarView: View {
         self.style = style
         self.adjacentMonthSelectionBehavior = adjacentMonthSelectionBehavior
         self.onSelectDate = onSelectDate
+        self.onDisplayedMonthChange = onDisplayedMonthChange
     }
 
     public var body: some View {
@@ -149,6 +152,7 @@ public struct MonthCalendarView: View {
         }
 
         displayedMonth = newMonth
+        onDisplayedMonthChange(newMonth)
     }
 
     private func monthTitle(
@@ -180,6 +184,7 @@ public struct MonthCalendarView: View {
         }
 
         displayedMonth = day.date
+        onDisplayedMonthChange(day.date)
     }
 }
 
