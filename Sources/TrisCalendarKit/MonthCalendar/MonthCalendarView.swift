@@ -13,14 +13,14 @@ public struct MonthCalendarView: View {
     private let onSelectDate: (Date) -> Void
 
     @Binding private var selectedDate: Date?
-
-    @State private var displayedMonth: Date
+    @Binding private var displayedMonth: Date
+    
     private let style: CalendarStyle
     private let adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior
     private let onDisplayedMonthChange: (Date) -> Void
     
     public init(
-        displayedMonth: Date,
+        displayedMonth: Binding<Date>,
         selectedDate: Binding<Date?>,
         highlightedDates: Set<Date> = [],
         configuration: CalendarConfiguration = CalendarConfiguration(),
@@ -29,9 +29,7 @@ public struct MonthCalendarView: View {
         onSelectDate: @escaping (Date) -> Void = { _ in },
         onDisplayedMonthChange: @escaping (Date) -> Void = { _ in }
     ) {
-        self._displayedMonth = State(
-            initialValue: displayedMonth
-        )
+        self._displayedMonth = displayedMonth
         self._selectedDate = selectedDate
         self.highlightedDates = highlightedDates
         self.configuration = configuration

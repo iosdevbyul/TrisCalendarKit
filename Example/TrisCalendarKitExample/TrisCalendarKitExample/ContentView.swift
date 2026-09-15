@@ -9,11 +9,12 @@ import SwiftUI
 import TrisCalendarKit
 
 struct ContentView: View {
+    @State private var displayedMonth = Date()
     @State private var selectedDate: Date?
 
     var body: some View {
         MonthCalendarView(
-            displayedMonth: Date(),
+            displayedMonth: $displayedMonth,
             selectedDate: $selectedDate,
             highlightedDates: highlightedDates,
             configuration: CalendarConfiguration(
@@ -22,10 +23,17 @@ struct ContentView: View {
                 weekStart: .sunday
             ),
             onSelectDate: { date in
-                print("Selected date:", date)
+                print("Selected:", date)
+            },
+            onDisplayedMonthChange: { month in
+                print("Month changed:", month)
             }
         )
         .padding()
+        Button("Today") {
+            displayedMonth = Date()
+            selectedDate = Date()
+        }
     }
 
     private var highlightedDates: Set<Date> {
