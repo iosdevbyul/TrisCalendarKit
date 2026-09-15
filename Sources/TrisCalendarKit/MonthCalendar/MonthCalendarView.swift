@@ -14,7 +14,7 @@ public struct MonthCalendarView: View {
 
     @Binding private var selectedDate: Date?
 
-    private let displayedMonth: Date
+    @State private var displayedMonth: Date
     private let style: CalendarStyle
     
     public init(
@@ -25,7 +25,9 @@ public struct MonthCalendarView: View {
         style: CalendarStyle = CalendarStyle(),
         onSelectDate: @escaping (Date) -> Void = { _ in }
     ) {
-        self.displayedMonth = displayedMonth
+        self._displayedMonth = State(
+            initialValue: displayedMonth
+        )
         self._selectedDate = selectedDate
         self.highlightedDates = highlightedDates
         self.configuration = configuration
@@ -45,6 +47,25 @@ public struct MonthCalendarView: View {
         )
 
         VStack(spacing: 12) {
+            MonthCalendarHeader(
+                title: monthTitle(
+                    for: displayedMonth,
+                    calendar: calendar
+                ),
+                onPreviousMonth: {
+                    moveMonth(
+                        by: -1,
+                        calendar: calendar
+                    )
+                },
+                onNextMonth: {
+                    moveMonth(
+                        by: 1,
+                        calendar: calendar
+                    )
+                }
+            )
+
             MonthWeekdayHeader(
                 calendar: calendar
             )
@@ -109,4 +130,35 @@ public struct MonthCalendarView: View {
             )
         }
     }
+    
+    private func moveMonth(
+        by value: Int,
+        calendar: Calendar
+    ) {
+        guard let newMonth = calendar.date(
+            byAdding: .month,
+            value: value,
+            to: displayedMonth
+        ) else {
+            return
+        }
+
+        displayedMonth = newMonth
+    }
+
+    private func monthTitle(
+        for date: Date,
+        calendar: Calendar
+    ) -> String {
+        let formatter = DateFormatter()
+
+        formatter.calendar = calendar
+        formatter.locale = configuration.locale.locale
+        formatter.timeZone = configuration.timeZone.timeZone
+        formatter.setLocalizedDateFormatFromTemplate("yyyyMMMM")
+
+        return formatter.string(from: date)
+    }
+
 }
+
