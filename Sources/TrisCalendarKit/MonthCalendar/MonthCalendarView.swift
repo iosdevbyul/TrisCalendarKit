@@ -16,6 +16,7 @@ public struct MonthCalendarView: View {
 
     @State private var displayedMonth: Date
     private let style: CalendarStyle
+    private let adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior
     
     public init(
         displayedMonth: Date,
@@ -23,6 +24,7 @@ public struct MonthCalendarView: View {
         highlightedDates: Set<Date> = [],
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
+        adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior = .navigate,
         onSelectDate: @escaping (Date) -> Void = { _ in }
     ) {
         self._displayedMonth = State(
@@ -32,6 +34,7 @@ public struct MonthCalendarView: View {
         self.highlightedDates = highlightedDates
         self.configuration = configuration
         self.style = style
+        self.adjacentMonthSelectionBehavior = adjacentMonthSelectionBehavior
         self.onSelectDate = onSelectDate
     }
 
@@ -82,8 +85,10 @@ public struct MonthCalendarView: View {
             ) {
                 ForEach(days) { day in
                     Button {
-                        selectedDate = day.date
-                        onSelectDate(day.date)
+                        select(
+                            day,
+                            calendar: calendar
+                        )
                     } label: {
                         MonthDayCell(
                             day: day,
@@ -160,5 +165,21 @@ public struct MonthCalendarView: View {
         return formatter.string(from: date)
     }
 
+    private func select(
+        _ day: CalendarDay,
+        calendar: Calendar
+    ) {
+        selectedDate = day.date
+        onSelectDate(day.date)
+
+        guard
+            !day.isCurrentMonth,
+            adjacentMonthSelectionBehavior == .navigate
+        else {
+            return
+        }
+
+        displayedMonth = day.date
+    }
 }
 
