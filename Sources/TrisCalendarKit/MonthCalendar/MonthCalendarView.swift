@@ -18,6 +18,7 @@ public struct MonthCalendarView: View {
     private let style: CalendarStyle
     private let adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior
     private let onDisplayedMonthChange: (Date) -> Void
+    private let options: MonthCalendarOptions
     
     public init(
         displayedMonth: Binding<Date>,
@@ -25,6 +26,7 @@ public struct MonthCalendarView: View {
         highlightedDates: Set<Date> = [],
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
+        options: MonthCalendarOptions = MonthCalendarOptions(),
         adjacentMonthSelectionBehavior: AdjacentMonthSelectionBehavior = .navigate,
         onSelectDate: @escaping (Date) -> Void = { _ in },
         onDisplayedMonthChange: @escaping (Date) -> Void = { _ in }
@@ -34,6 +36,7 @@ public struct MonthCalendarView: View {
         self.highlightedDates = highlightedDates
         self.configuration = configuration
         self.style = style
+        self.options = options
         self.adjacentMonthSelectionBehavior = adjacentMonthSelectionBehavior
         self.onSelectDate = onSelectDate
         self.onDisplayedMonthChange = onDisplayedMonthChange
@@ -50,10 +53,9 @@ public struct MonthCalendarView: View {
             for: displayedMonth
         )
         
-        let normalizedHighlightedDates = Set(
-            highlightedDates.map {
-                calendar.startOfDay(for: $0)
-            }
+        let normalizedHighlightedDates = MonthCalendarLogic.normalizedDates(
+            highlightedDates,
+            calendar: calendar
         )
 
         VStack(spacing: style.sectionSpacing) {
@@ -63,6 +65,7 @@ public struct MonthCalendarView: View {
                     calendar: calendar
                 ),
                 style: style,
+                showsNavigationButtons: options.showsNavigationButtons,
                 onPreviousMonth: {
                     moveMonth(
                         by: -1,
@@ -93,28 +96,33 @@ public struct MonthCalendarView: View {
                 spacing: style.dayRowSpacing
             ) {
                 ForEach(days) { day in
-                    Button {
-                        select(
-                            day,
-                            calendar: calendar
-                        )
-                    } label: {
-                        MonthDayCell(
-                            day: day,
-                            calendar: calendar,
-                            isSelected: isSelected(
-                                day.date,
-                                calendar: calendar
-                            ),
-                            isHighlighted: isHighlighted(
-                                day.date,
+                    if day.isCurrentMonth || options.showsAdjacentMonthDates {
+                        Button {
+                            select(day)
+                        } label: {
+                            MonthDayCell(
+                                day: day,
                                 calendar: calendar,
-                                highlightedDates: normalizedHighlightedDates
-                            ),
-                            style: style
-                        )
+                                isSelected: isSelected(
+                                    day.date,
+                                    calendar: calendar
+                                ),
+                                isHighlighted: MonthCalendarLogic.isHighlighted(
+                                    day.date,
+                                    highlightedDates: normalizedHighlightedDates,
+                                    calendar: calendar
+                                ),
+                                style: style
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        Color.clear
+                            .frame(
+                                width: style.dayCellSize,
+                                height: style.dayCellSize
+                            )
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }
@@ -175,16 +183,15 @@ public struct MonthCalendarView: View {
     }
 
     private func select(
-        _ day: CalendarDay,
-        calendar: Calendar
+        _ day: CalendarDay
     ) {
         selectedDate = day.date
         onSelectDate(day.date)
 
-        guard
-            !day.isCurrentMonth,
-            adjacentMonthSelectionBehavior == .navigate
-        else {
+        guard MonthCalendarLogic.shouldNavigateToAdjacentMonth(
+            day: day,
+            behavior: adjacentMonthSelectionBehavior
+        ) else {
             return
         }
 
@@ -192,4 +199,3 @@ public struct MonthCalendarView: View {
         onDisplayedMonthChange(day.date)
     }
 }
-

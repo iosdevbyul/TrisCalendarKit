@@ -353,35 +353,3 @@ struct CalendarGeneratorTests {
         #expect(days.last?.date == expectedLastDate)
     }
 }
-
-private func makeDate(
-    year: Int,
-    month: Int,
-    day: Int
-) throws -> Date {
-    var calendar = Calendar(
-        identifier: .gregorian
-    )
-
-    calendar.timeZone = TimeZone(
-        secondsFromGMT: 0
-    )!
-
-    let components = DateComponents(
-        year: year,
-        month: month,
-        day: day
-    )
-
-    guard let date = calendar.date(
-        from: components
-    ) else {
-        throw TestError.invalidDate
-    }
-
-    return date
-}
-
-private enum TestError: Error {
-    case invalidDate
-}

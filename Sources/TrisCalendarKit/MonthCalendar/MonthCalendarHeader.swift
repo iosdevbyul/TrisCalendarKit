@@ -10,15 +10,21 @@ import SwiftUI
 struct MonthCalendarHeader: View {
     let title: String
     let style: CalendarStyle
+    let showsNavigationButtons: Bool
 
     let onPreviousMonth: () -> Void
     let onNextMonth: () -> Void
 
     var body: some View {
         HStack {
-            Button(action: onPreviousMonth) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+            if showsNavigationButtons {
+                Button(action: onPreviousMonth) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+            } else {
+                Color.clear
+                    .frame(width: 24, height: 24)
             }
 
             Spacer()
@@ -28,9 +34,14 @@ struct MonthCalendarHeader: View {
 
             Spacer()
 
-            Button(action: onNextMonth) {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
+            if showsNavigationButtons {
+                Button(action: onNextMonth) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+            } else {
+                Color.clear
+                    .frame(width: 24, height: 24)
             }
         }
         .buttonStyle(.plain)

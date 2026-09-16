@@ -13,22 +13,17 @@ struct MonthWeekdayHeader: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(weekdaySymbols, id: \.self) { symbol in
+            ForEach(
+                MonthCalendarLogic.weekdaySymbols(
+                    calendar: calendar
+                ),
+                id: \.self
+            ) { symbol in
                 Text(symbol)
                     .font(style.weekdayFont)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
             }
         }
-    }
-
-    private var weekdaySymbols: [String] {
-        let symbols = calendar.shortStandaloneWeekdaySymbols
-        let firstWeekdayIndex = calendar.firstWeekday - 1
-
-        return Array(
-            symbols[firstWeekdayIndex...] +
-            symbols[..<firstWeekdayIndex]
-        )
     }
 }
