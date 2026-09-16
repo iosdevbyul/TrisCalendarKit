@@ -117,4 +117,47 @@ public struct CalendarGenerator {
 
         return days
     }
+    
+    public func makeDays(
+        around date: Date,
+        pastDays: Int,
+        futureDays: Int
+    ) -> [CalendarDay] {
+        guard pastDays >= 0, futureDays >= 0 else {
+            return []
+        }
+
+        let calendar = configuration.configuredCalendar
+        let normalizedDate = calendar.startOfDay(for: date)
+
+        guard let startDate = calendar.date(
+            byAdding: .day,
+            value: -pastDays,
+            to: normalizedDate
+        ) else {
+            return []
+        }
+
+        let totalCount = pastDays + futureDays + 1
+
+        return (0..<totalCount).compactMap { offset in
+            guard let currentDate = calendar.date(
+                byAdding: .day,
+                value: offset,
+                to: startDate
+            ) else {
+                return nil
+            }
+
+            return CalendarDay(
+                date: currentDate,
+                isCurrentMonth: calendar.isDate(
+                    currentDate,
+                    equalTo: normalizedDate,
+                    toGranularity: .month
+                ),
+                isToday: calendar.isDateInToday(currentDate)
+            )
+        }
+    }
 }

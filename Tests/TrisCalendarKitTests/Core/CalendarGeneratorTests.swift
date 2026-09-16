@@ -352,4 +352,155 @@ struct CalendarGeneratorTests {
         #expect(days.first?.date == expectedFirstDate)
         #expect(days.last?.date == expectedLastDate)
     }
+    
+    @Test
+    func generatesContinuousDaysAroundReferenceDate() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .sunday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let referenceDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 17
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 14
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 21
+        )
+
+        let days = generator.makeDays(
+            around: referenceDate,
+            pastDays: 3,
+            futureDays: 4
+        )
+
+        #expect(days.count == 8)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
+    
+    @Test
+    func generatesContinuousDaysAcrossMonthBoundary() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .sunday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let referenceDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 1
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 8,
+            day: 30
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 3
+        )
+
+        let days = generator.makeDays(
+            around: referenceDate,
+            pastDays: 2,
+            futureDays: 2
+        )
+
+        #expect(days.count == 5)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
+    
+    @Test
+    func generatesContinuousDaysAcrossYearBoundary() throws {
+        let configuration = CalendarConfiguration(
+            calendar: Calendar(identifier: .gregorian),
+            locale: .unitedStates,
+            timeZone: .custom(
+                TimeZone(secondsFromGMT: 0)!
+            ),
+            weekStart: .sunday
+        )
+
+        let generator = CalendarGenerator(
+            configuration: configuration
+        )
+
+        let referenceDate = try makeDate(
+            year: 2026,
+            month: 12,
+            day: 31
+        )
+
+        let expectedFirstDate = try makeDate(
+            year: 2026,
+            month: 12,
+            day: 30
+        )
+
+        let expectedLastDate = try makeDate(
+            year: 2027,
+            month: 1,
+            day: 2
+        )
+
+        let days = generator.makeDays(
+            around: referenceDate,
+            pastDays: 1,
+            futureDays: 2
+        )
+
+        #expect(days.count == 4)
+        #expect(days.first?.date == expectedFirstDate)
+        #expect(days.last?.date == expectedLastDate)
+    }
+    
+    @Test
+    func returnsEmptyDaysForNegativeRange() throws {
+        let generator = CalendarGenerator()
+
+        let date = try makeDate(
+            year: 2026,
+            month: 9,
+            day: 17
+        )
+
+        let days = generator.makeDays(
+            around: date,
+            pastDays: -1,
+            futureDays: 10
+        )
+
+        #expect(days.isEmpty)
+    }
 }
