@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MonthCalendarHeader: View {
     let title: String
+    let style: CalendarStyle
+
     let onPreviousMonth: () -> Void
     let onNextMonth: () -> Void
 
@@ -22,7 +24,7 @@ struct MonthCalendarHeader: View {
             Spacer()
 
             Text(title)
-                .font(.system(size: 18, weight: .semibold))
+                .font(style.headerFont)
 
             Spacer()
 

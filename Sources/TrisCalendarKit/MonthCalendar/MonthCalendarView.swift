@@ -56,12 +56,13 @@ public struct MonthCalendarView: View {
             }
         )
 
-        VStack(spacing: 12) {
+        VStack(spacing: style.sectionSpacing) {
             MonthCalendarHeader(
                 title: monthTitle(
                     for: displayedMonth,
                     calendar: calendar
                 ),
+                style: style,
                 onPreviousMonth: {
                     moveMonth(
                         by: -1,
@@ -77,7 +78,8 @@ public struct MonthCalendarView: View {
             )
 
             MonthWeekdayHeader(
-                calendar: calendar
+                calendar: calendar,
+                style: style
             )
 
             LazyVGrid(
@@ -88,7 +90,7 @@ public struct MonthCalendarView: View {
                     ),
                     count: 7
                 ),
-                spacing: 8
+                spacing: style.dayRowSpacing
             ) {
                 ForEach(days) { day in
                     Button {

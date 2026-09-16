@@ -9,12 +9,13 @@ import SwiftUI
 
 struct MonthWeekdayHeader: View {
     let calendar: Calendar
+    let style: CalendarStyle
 
     var body: some View {
         HStack(spacing: 0) {
             ForEach(weekdaySymbols, id: \.self) { symbol in
                 Text(symbol)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(style.weekdayFont)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
             }
@@ -23,7 +24,6 @@ struct MonthWeekdayHeader: View {
 
     private var weekdaySymbols: [String] {
         let symbols = calendar.shortStandaloneWeekdaySymbols
-
         let firstWeekdayIndex = calendar.firstWeekday - 1
 
         return Array(

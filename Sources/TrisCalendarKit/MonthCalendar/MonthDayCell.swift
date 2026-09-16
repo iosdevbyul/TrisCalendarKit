@@ -28,10 +28,13 @@ struct MonthDayCell: View {
             }
 
             Text(dayText)
-                .font(.system(size: 14, weight: .medium))
+                .font(style.dayFont)
                 .foregroundColor(textColor)
         }
-        .frame(width: 36, height: 36)
+        .frame(
+            width: style.dayCellSize,
+            height: style.dayCellSize
+        )
     }
 
     private var dayText: String {
