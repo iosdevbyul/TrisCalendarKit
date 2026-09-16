@@ -94,8 +94,20 @@ public struct DateStripCalendarView: View {
                                     for: day.date
                                 )
                             )
-                        }
-                    }
+                        }//:ForEach
+                    }//:LazyHStack
+                }
+                .coordinateSpace(
+                    name: "DateStripCalendarScrollView"
+                )
+                .onPreferenceChange(
+                    DateStripItemPositionPreferenceKey.self
+                ) { positions in
+                    updateDisplayedDate(
+                        from: positions,
+                        containerWidth: geometry.size.width,
+                        calendar: calendar
+                    )
                 }
                 .onAppear {
                     proxy.scrollTo(
@@ -105,7 +117,7 @@ public struct DateStripCalendarView: View {
                         anchor: .center
                     )
                 }
-            }
+            }//:ScrollViewReader
         }
         .frame(
             height: style.dayCellSize + 30
@@ -124,5 +136,35 @@ public struct DateStripCalendarView: View {
             date,
             inSameDayAs: selectedDate
         )
+    }
+    
+    private func updateDisplayedDate(
+        from positions: [DateStripItemPosition],
+        containerWidth: CGFloat,
+        calendar: Calendar
+    ) {
+        guard !positions.isEmpty else {
+            return
+        }
+
+        let centerX = containerWidth / 2
+
+        guard let closest = positions.min(
+            by: {
+                abs($0.midX - centerX) <
+                abs($1.midX - centerX)
+            }
+        ) else {
+            return
+        }
+
+        guard !calendar.isDate(
+            displayedDate,
+            inSameDayAs: closest.date
+        ) else {
+            return
+        }
+
+        displayedDate = closest.date
     }
 }
