@@ -11,6 +11,9 @@ import TrisCalendarKit
 struct ContentView: View {
     @State private var displayedMonth = Date()
     @State private var selectedDate: Date?
+    
+    @State private var displayedWeekDate = Date()
+    @State private var selectedWeekDate: Date?
 
     var body: some View {
         MonthCalendarView(
@@ -30,6 +33,23 @@ struct ContentView: View {
             }
         )
         .padding()
+        
+        
+        DateStripCalendarView(
+            displayedDate: $displayedWeekDate,
+            selectedDate: $selectedWeekDate,
+            highlightedDates: highlightedDates,
+            configuration: CalendarConfiguration(
+                locale: .korea,
+                timeZone: .seoul,
+                weekStart: .sunday
+            ),
+            onSelectDate: { date in
+                print("Selected week date:", date)
+            }
+        )
+        .padding()
+        
         Button("Today") {
             displayedMonth = Date()
             selectedDate = Date()
