@@ -49,9 +49,9 @@ struct DateStripDayCell: View {
             from: day.date
         )
 
-        let symbols = calendar.shortStandaloneWeekdaySymbols
-
-        return symbols[weekday - 1]
+        return calendar.shortStandaloneWeekdaySymbols[
+            weekday - 1
+        ]
     }
 
     private var dayText: String {
