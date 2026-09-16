@@ -53,6 +53,9 @@ struct ContentView: View {
         Button("Today") {
             displayedMonth = Date()
             selectedDate = Date()
+
+            displayedWeekDate = Date()
+            selectedWeekDate = Date()
         }
     }
 

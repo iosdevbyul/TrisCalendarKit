@@ -13,10 +13,10 @@ public struct DateStripCalendarView: View {
     private let style: CalendarStyle
     private let options: DateStripCalendarOptions
     private let onSelectDate: (Date) -> Void
-
+    @State private var rangeAnchorDate: Date
     @Binding private var selectedDate: Date?
     @Binding private var displayedDate: Date
-
+    @State private var scrollReportedDate: Date?
     public init(
         displayedDate: Binding<Date>,
         selectedDate: Binding<Date?>,
@@ -28,6 +28,11 @@ public struct DateStripCalendarView: View {
     ) {
         self._displayedDate = displayedDate
         self._selectedDate = selectedDate
+
+        self._rangeAnchorDate = State(
+            initialValue: displayedDate.wrappedValue
+        )
+
         self.highlightedDates = highlightedDates
         self.configuration = configuration
         self.style = style
@@ -43,7 +48,7 @@ public struct DateStripCalendarView: View {
         )
 
         let days = generator.makeDays(
-            around: displayedDate,
+            around: rangeAnchorDate,
             pastDays: options.pastDays,
             futureDays: options.futureDays
         )
@@ -117,6 +122,32 @@ public struct DateStripCalendarView: View {
                         anchor: .center
                     )
                 }
+                .onChange(of: displayedDate) { newDate in
+                    if let scrollReportedDate,
+                       calendar.isDate(
+                           scrollReportedDate,
+                           inSameDayAs: newDate
+                       ) {
+                        self.scrollReportedDate = nil
+                        return
+                    }
+
+                    if !contains(
+                        newDate,
+                        in: days,
+                        calendar: calendar
+                    ) {
+                        rangeAnchorDate = newDate
+                        return
+                    }
+
+                    withAnimation {
+                        proxy.scrollTo(
+                            calendar.startOfDay(for: newDate),
+                            anchor: .center
+                        )
+                    }
+                }
             }//:ScrollViewReader
         }
         .frame(
@@ -165,6 +196,20 @@ public struct DateStripCalendarView: View {
             return
         }
 
+        scrollReportedDate = closest.date
         displayedDate = closest.date
+    }
+    
+    private func contains(
+        _ date: Date,
+        in days: [CalendarDay],
+        calendar: Calendar
+    ) -> Bool {
+        days.contains {
+            calendar.isDate(
+                $0.date,
+                inSameDayAs: date
+            )
+        }
     }
 }
