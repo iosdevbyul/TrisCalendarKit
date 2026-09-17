@@ -87,9 +87,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
 
         weak var collectionView: UICollectionView?
 
-        private let itemCount = 1001
-        private let centerIndex = 500
-        private let recenterThreshold = 150
+        private let logic = InfiniteDateStripLogic()
 
         private var anchorDate: Date
 
@@ -153,7 +151,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             collectionView.layoutIfNeeded()
 
             let indexPath = IndexPath(
-                item: centerIndex,
+                item: logic.centerIndex,
                 section: 0
             )
 
@@ -197,7 +195,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             collectionView.layoutIfNeeded()
 
             let centerIndexPath = IndexPath(
-                item: centerIndex,
+                item: logic.centerIndex,
                 section: 0
             )
 
@@ -217,16 +215,10 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
         private func date(
             for index: Int
         ) -> Date? {
-            let calendar =
-                parent.configuration.configuredCalendar
-
-            let offset =
-                index - centerIndex
-
-            return calendar.date(
-                byAdding: .day,
-                value: offset,
-                to: anchorDate
+            logic.date(
+                for: index,
+                anchorDate: anchorDate,
+                calendar: parent.configuration.configuredCalendar
             )
         }
 
@@ -385,17 +377,9 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
 
             let index = indexPath.item
 
-            let isNearBeginning =
-                index <= recenterThreshold
-
-            let isNearEnd =
-                index >= itemCount
-                - recenterThreshold
-
-            guard
-                isNearBeginning
-                || isNearEnd
-            else {
+            guard logic.shouldRecenter(
+                at: index
+            ) else {
                 return
             }
 
@@ -418,7 +402,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             collectionView.layoutIfNeeded()
 
             let centerIndexPath = IndexPath(
-                item: centerIndex,
+                item: logic.centerIndex,
                 section: 0
             )
 
@@ -439,7 +423,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             _ collectionView: UICollectionView,
             numberOfItemsInSection section: Int
         ) -> Int {
-            itemCount
+            logic.itemCount
         }
 
         func collectionView(
