@@ -64,11 +64,15 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
 
         collectionView.collectionViewLayout.invalidateLayout()
 
-        context.coordinator.updateVisibleStateIfNeeded(
+        context.coordinator.performInitialScrollIfNeeded(
             in: collectionView
         )
 
-        context.coordinator.performInitialScrollIfNeeded(
+        context.coordinator.synchronizeDisplayedDateIfNeeded(
+            in: collectionView
+        )
+
+        context.coordinator.updateVisibleStateIfNeeded(
             in: collectionView
         )
     }
@@ -148,6 +152,51 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
 
             didInitialScroll = true
             lastReportedDate = anchorDate
+        }
+        
+        func synchronizeDisplayedDateIfNeeded(
+            in collectionView: UICollectionView
+        ) {
+            guard didInitialScroll else {
+                return
+            }
+
+            let calendar =
+                parent.configuration.configuredCalendar
+
+            let targetDate = calendar.startOfDay(
+                for: parent.displayedDate
+            )
+
+            if let lastReportedDate,
+               calendar.isDate(
+                   lastReportedDate,
+                   inSameDayAs: targetDate
+               ) {
+                return
+            }
+
+            isRecentering = true
+
+            anchorDate = targetDate
+
+            collectionView.reloadData()
+            collectionView.layoutIfNeeded()
+
+            let centerIndexPath = IndexPath(
+                item: centerIndex,
+                section: 0
+            )
+
+            collectionView.scrollToItem(
+                at: centerIndexPath,
+                at: .centeredHorizontally,
+                animated: false
+            )
+
+            lastReportedDate = targetDate
+
+            isRecentering = false
         }
 
         // MARK: - Date Calculation

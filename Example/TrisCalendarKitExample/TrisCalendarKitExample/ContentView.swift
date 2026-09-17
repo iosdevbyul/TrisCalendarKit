@@ -14,6 +14,9 @@ struct ContentView: View {
     
     @State private var displayedWeekDate = Date()
     @State private var selectedWeekDate: Date?
+    
+    @State private var displayedInfiniteDate = Date()
+    @State private var selectedInfiniteDate: Date?
 
     var body: some View {
         MonthCalendarView(
@@ -49,6 +52,38 @@ struct ContentView: View {
             }
         )
         .padding()
+        
+        InfiniteDateStripCalendarView(
+            displayedDate: $displayedInfiniteDate,
+            selectedDate: $selectedInfiniteDate,
+            highlightedDates: highlightedDates,
+            configuration: CalendarConfiguration(
+                locale: .korea,
+                timeZone: .seoul,
+                weekStart: .sunday
+            ),
+            onSelectDate: { date in
+                print("Infinite selected:", date)
+            }
+        )
+        .frame(height: 80)
+        .padding()
+        
+        Button("Infinite Today") {
+            displayedInfiniteDate = Date()
+        }
+        
+        Button("Go to 2035") {
+            var components = DateComponents()
+            components.year = 2035
+            components.month = 5
+            components.day = 10
+
+            displayedInfiniteDate =
+                Calendar.current.date(
+                    from: components
+                ) ?? Date()
+        }
         
         Button("Today") {
             displayedMonth = Date()
