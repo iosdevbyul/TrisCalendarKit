@@ -8,6 +8,7 @@
 import SwiftUI
 import UIKit
 
+@MainActor
 final class InfiniteDateStripCollectionViewCell:
     UICollectionViewCell {
 
@@ -17,35 +18,35 @@ final class InfiniteDateStripCollectionViewCell:
     private var hostingController:
         UIHostingController<DateStripDayCell>?
 
+    override init(
+        frame: CGRect
+    ) {
+        super.init(frame: frame)
+    }
+
+    required init?(
+        coder: NSCoder
+    ) {
+        fatalError(
+            "init(coder:) has not been implemented"
+        )
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
-
-        hostingController?.view.removeFromSuperview()
-        hostingController = nil
     }
 
     func configure(
         date: Date,
         calendar: Calendar,
         selectedDate: Date?,
-        highlightedDates: Set<Date>,
+        isHighlighted: Bool,
         style: CalendarStyle
     ) {
-        hostingController?.view.removeFromSuperview()
-
         let day = CalendarDay(
             date: date,
             isCurrentMonth: true,
             isToday: calendar.isDateInToday(date)
-        )
-
-        let normalizedDate =
-            calendar.startOfDay(for: date)
-
-        let normalizedHighlightedDates = Set(
-            highlightedDates.map {
-                calendar.startOfDay(for: $0)
-            }
         )
 
         let isSelected: Bool
@@ -63,37 +64,62 @@ final class InfiniteDateStripCollectionViewCell:
             day: day,
             calendar: calendar,
             isSelected: isSelected,
-            isHighlighted:
-                normalizedHighlightedDates.contains(
-                    normalizedDate
-                ),
+            isHighlighted: isHighlighted,
             style: style
         )
 
-        let controller = UIHostingController(
-            rootView: rootView
+        if let hostingController {
+            hostingController.rootView = rootView
+            return
+        }
+
+        let hostingController =
+            UIHostingController(
+                rootView: rootView
+            )
+
+        hostingController.view.backgroundColor =
+            .clear
+
+        hostingController.view
+            .translatesAutoresizingMaskIntoConstraints =
+            false
+
+        contentView.addSubview(
+            hostingController.view
         )
 
-        controller.view.backgroundColor = .clear
-        controller.view.translatesAutoresizingMaskIntoConstraints = false
-
-        contentView.addSubview(controller.view)
-
         NSLayoutConstraint.activate([
-            controller.view.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor
-            ),
-            controller.view.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor
-            ),
-            controller.view.topAnchor.constraint(
-                equalTo: contentView.topAnchor
-            ),
-            controller.view.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor
-            )
+            hostingController.view
+                .leadingAnchor
+                .constraint(
+                    equalTo:
+                        contentView.leadingAnchor
+                ),
+
+            hostingController.view
+                .trailingAnchor
+                .constraint(
+                    equalTo:
+                        contentView.trailingAnchor
+                ),
+
+            hostingController.view
+                .topAnchor
+                .constraint(
+                    equalTo:
+                        contentView.topAnchor
+                ),
+
+            hostingController.view
+                .bottomAnchor
+                .constraint(
+                    equalTo:
+                        contentView.bottomAnchor
+                )
         ])
 
-        hostingController = controller
+        self.hostingController =
+            hostingController
     }
 }

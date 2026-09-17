@@ -98,7 +98,9 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
 
         private var lastReportedDate: Date?
         private var lastSelectedDate: Date?
-        private var lastHighlightedDates: Set<Date>
+
+        private var normalizedHighlightedDates: Set<Date>
+        private var lastNormalizedHighlightedDates: Set<Date>
 
         init(
             parent: InfiniteDateStripScrollView
@@ -115,8 +117,19 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             self.lastSelectedDate =
                 parent.selectedDate
 
-            self.lastHighlightedDates =
-                parent.highlightedDates
+            let normalizedHighlights = Set(
+                parent.highlightedDates.map {
+                    calendar.startOfDay(
+                        for: $0
+                    )
+                }
+            )
+
+            self.normalizedHighlightedDates =
+                normalizedHighlights
+
+            self.lastNormalizedHighlightedDates =
+                normalizedHighlights
 
             super.init()
         }
@@ -222,12 +235,24 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
         func updateVisibleStateIfNeeded(
             in collectionView: UICollectionView
         ) {
+            let calendar =
+                parent.configuration.configuredCalendar
+
+            let currentNormalizedHighlights = Set(
+                parent.highlightedDates.map {
+                    calendar.startOfDay(
+                        for: $0
+                    )
+                }
+            )
+
             let selectedDateChanged =
-                lastSelectedDate != parent.selectedDate
+                lastSelectedDate
+                != parent.selectedDate
 
             let highlightedDatesChanged =
-                lastHighlightedDates
-                != parent.highlightedDates
+                lastNormalizedHighlightedDates
+                != currentNormalizedHighlights
 
             guard
                 selectedDateChanged
@@ -239,8 +264,13 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             lastSelectedDate =
                 parent.selectedDate
 
-            lastHighlightedDates =
-                parent.highlightedDates
+            if highlightedDatesChanged {
+                normalizedHighlightedDates =
+                    currentNormalizedHighlights
+
+                lastNormalizedHighlightedDates =
+                    currentNormalizedHighlights
+            }
 
             let visibleIndexPaths =
                 collectionView.indexPathsForVisibleItems
@@ -432,17 +462,23 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
                 return UICollectionViewCell()
             }
 
+            let calendar =
+                parent.configuration.configuredCalendar
+
+            let normalizedDate =
+                calendar.startOfDay(
+                    for: date
+                )
+
             cell.configure(
                 date: date,
-                calendar:
-                    parent.configuration
-                        .configuredCalendar,
-                selectedDate:
-                    parent.selectedDate,
-                highlightedDates:
-                    parent.highlightedDates,
-                style:
-                    parent.style
+                calendar: calendar,
+                selectedDate: parent.selectedDate,
+                isHighlighted:
+                    normalizedHighlightedDates.contains(
+                        normalizedDate
+                    ),
+                style: parent.style
             )
 
             return cell
