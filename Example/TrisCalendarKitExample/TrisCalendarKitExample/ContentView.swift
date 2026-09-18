@@ -10,103 +10,131 @@ import TrisCalendarKit
 
 struct ContentView: View {
     @State private var displayedMonth = Date()
-    @State private var selectedDate: Date?
-    
-    @State private var displayedWeekDate = Date()
-    @State private var selectedWeekDate: Date?
-    
+    @State private var selectedMonthDate: Date?
+
+    @State private var displayedLimitedDate = Date()
+    @State private var selectedLimitedDate: Date?
+
     @State private var displayedInfiniteDate = Date()
     @State private var selectedInfiniteDate: Date?
 
     var body: some View {
-        MonthCalendarView(
-            displayedMonth: $displayedMonth,
-            selectedDate: $selectedDate,
-            highlightedDates: highlightedDates,
-            configuration: CalendarConfiguration(
-                locale: .korea,
-                timeZone: .seoul,
-                weekStart: .sunday
-            ),
-            onSelectDate: { date in
-                print("Selected:", date)
-            },
-            onDisplayedMonthChange: { month in
-                print("Month changed:", month)
+        ScrollView {
+            VStack(spacing: 32) {
+                monthCalendarSection
+
+                limitedDateStripSection
+
+                infiniteDateStripSection
             }
-        )
-        .padding()
-        
-        
-        DateStripCalendarView(
-            displayedDate:
-                $displayedWeekDate,
-            selectedDate:
-                $selectedWeekDate,
-            range: .infinite,
-            highlightedDates:
-                highlightedDates,
-            configuration:
-                CalendarConfiguration(
-                    locale: .korea,
-                    timeZone: .seoul,
-                    weekStart: .sunday
+            .padding()
+        }
+    }
+
+    private var monthCalendarSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Month Calendar")
+                .font(.headline)
+
+            MonthCalendarView(
+                displayedMonth: $displayedMonth,
+                selectedDate: $selectedMonthDate,
+                highlightedDates: highlightedDates,
+                configuration: calendarConfiguration,
+                onSelectDate: { date in
+                    print(
+                        "Month selected:",
+                        date
+                    )
+                },
+                onDisplayedMonthChange: { date in
+                    print(
+                        "Month changed:",
+                        date
+                    )
+                }
+            )
+
+            Button("Today") {
+                displayedMonth = Date()
+                selectedMonthDate = Date()
+            }
+        }
+    }
+
+    private var limitedDateStripSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Limited Date Strip")
+                .font(.headline)
+
+            DateStripCalendarView(
+                displayedDate: $displayedLimitedDate,
+                selectedDate: $selectedLimitedDate,
+                range: .limited(
+                    pastDays: 30,
+                    futureDays: 30
                 ),
-            onSelectDate: { date in
-                print(
-                    "Selected:",
-                    date
-                )
-            },
-            onDisplayedDateChange: { date in
-                print(
-                    "Displayed:",
-                    date
-                )
+                highlightedDates: highlightedDates,
+                configuration: calendarConfiguration,
+                onSelectDate: { date in
+                    print(
+                        "Limited selected:",
+                        date
+                    )
+                },
+                onDisplayedDateChange: { date in
+                    print(
+                        "Limited displayed:",
+                        date
+                    )
+                }
+            )
+
+            Button("Today") {
+                displayedLimitedDate = Date()
+                selectedLimitedDate = Date()
             }
+        }
+    }
+
+    private var infiniteDateStripSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Infinite Date Strip")
+                .font(.headline)
+
+            DateStripCalendarView(
+                displayedDate: $displayedInfiniteDate,
+                selectedDate: $selectedInfiniteDate,
+                range: .infinite,
+                highlightedDates: highlightedDates,
+                configuration: calendarConfiguration,
+                onSelectDate: { date in
+                    print(
+                        "Infinite selected:",
+                        date
+                    )
+                },
+                onDisplayedDateChange: { date in
+                    print(
+                        "Infinite displayed:",
+                        date
+                    )
+                }
+            )
+
+            Button("Today") {
+                displayedInfiniteDate = Date()
+                selectedInfiniteDate = Date()
+            }
+        }
+    }
+
+    private var calendarConfiguration: CalendarConfiguration {
+        CalendarConfiguration(
+            locale: .korea,
+            timeZone: .seoul,
+            weekStart: .sunday
         )
-        .padding()
-        
-//        DateStripCalendarView(
-//            displayedDate:
-//                $displayedWeekDate,
-//            selectedDate:
-//                $selectedWeekDate
-//        )
-//        DateStripCalendarView(
-//            displayedDate:
-//                $displayedWeekDate,
-//            selectedDate:
-//                $selectedWeekDate,
-//            range: .limited(
-//                pastDays: 365,
-//                futureDays: 30
-//            )
-//        )
-        
-        Button("Infinite Today") {
-            displayedInfiniteDate = Date()
-        }
-        
-        Button("Go to 2035") {
-            var components = DateComponents()
-            components.year = 2035
-            components.month = 5
-            components.day = 10
-
-            displayedInfiniteDate =
-                Calendar.current.date(
-                    from: components
-                ) ?? Date()
-        }
-        
-        Button("Today") {
-            displayedMonth = Date()
-            selectedDate = Date()
-
-            displayedWeekDate = Date()
-            selectedWeekDate = Date()
-        }
     }
 
     private var highlightedDates: Set<Date> {
@@ -133,6 +161,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
-//git commit -m "Refactor - tighten TrisCalendarKit public API" \
-//-m "Expose only reusable calendar configuration and view types while keeping implementation details internal"
