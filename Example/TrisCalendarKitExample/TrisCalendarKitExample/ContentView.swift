@@ -48,7 +48,10 @@ struct ContentView: View {
                 weekStart: .sunday
             ),
             onSelectDate: { date in
-                print("Selected week date:", date)
+                print("DateStrip selected:", date)
+            },
+            onDisplayedDateChange: { date in
+                print("DateStrip displayed:", date)
             }
         )
         .padding()

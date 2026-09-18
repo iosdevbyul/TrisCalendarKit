@@ -12,11 +12,16 @@ public struct DateStripCalendarView: View {
     private let highlightedDates: Set<Date>
     private let style: CalendarStyle
     private let options: DateStripCalendarOptions
+
     private let onSelectDate: (Date) -> Void
-    @State private var rangeAnchorDate: Date
+    private let onDisplayedDateChange: (Date) -> Void
+
     @Binding private var selectedDate: Date?
     @Binding private var displayedDate: Date
+
+    @State private var rangeAnchorDate: Date
     @State private var scrollReportedDate: Date?
+
     public init(
         displayedDate: Binding<Date>,
         selectedDate: Binding<Date?>,
@@ -24,7 +29,8 @@ public struct DateStripCalendarView: View {
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
         options: DateStripCalendarOptions = DateStripCalendarOptions(),
-        onSelectDate: @escaping (Date) -> Void = { _ in }
+        onSelectDate: @escaping (Date) -> Void = { _ in },
+        onDisplayedDateChange: @escaping (Date) -> Void = { _ in }
     ) {
         self._displayedDate = displayedDate
         self._selectedDate = selectedDate
@@ -38,6 +44,7 @@ public struct DateStripCalendarView: View {
         self.style = style
         self.options = options
         self.onSelectDate = onSelectDate
+        self.onDisplayedDateChange = onDisplayedDateChange
     }
 
     public var body: some View {
@@ -73,7 +80,6 @@ public struct DateStripCalendarView: View {
                         ForEach(days) { day in
                             Button {
                                 selectedDate = day.date
-                                displayedDate = day.date
                                 onSelectDate(day.date)
                             } label: {
                                 DateStripDayCell(
@@ -91,7 +97,29 @@ public struct DateStripCalendarView: View {
                                         ),
                                     style: style
                                 )
-                                .frame(width: cellWidth)
+                                .frame(
+                                    width: cellWidth
+                                )
+                                .background {
+                                    GeometryReader { proxy in
+                                        Color.clear
+                                            .preference(
+                                                key:
+                                                    DateStripItemPositionPreferenceKey.self,
+                                                value: [
+                                                    DateStripItemPosition(
+                                                        date: day.date,
+                                                        midX:
+                                                            proxy.frame(
+                                                                in: .named(
+                                                                    "DateStripCalendarScrollView"
+                                                                )
+                                                            ).midX
+                                                    )
+                                                ]
+                                            )
+                                    }
+                                }
                             }
                             .buttonStyle(.plain)
                             .id(
@@ -99,8 +127,8 @@ public struct DateStripCalendarView: View {
                                     for: day.date
                                 )
                             )
-                        }//:ForEach
-                    }//:LazyHStack
+                        }
+                    }
                 }
                 .coordinateSpace(
                     name: "DateStripCalendarScrollView"
@@ -138,17 +166,29 @@ public struct DateStripCalendarView: View {
                         calendar: calendar
                     ) {
                         rangeAnchorDate = newDate
+
+                        DispatchQueue.main.async {
+                            proxy.scrollTo(
+                                calendar.startOfDay(
+                                    for: newDate
+                                ),
+                                anchor: .center
+                            )
+                        }
+
                         return
                     }
 
                     withAnimation {
                         proxy.scrollTo(
-                            calendar.startOfDay(for: newDate),
+                            calendar.startOfDay(
+                                for: newDate
+                            ),
                             anchor: .center
                         )
                     }
                 }
-            }//:ScrollViewReader
+            }
         }
         .frame(
             height: style.dayCellSize + 30
@@ -168,7 +208,7 @@ public struct DateStripCalendarView: View {
             inSameDayAs: selectedDate
         )
     }
-    
+
     private func updateDisplayedDate(
         from positions: [DateStripItemPosition],
         containerWidth: CGFloat,
@@ -178,7 +218,8 @@ public struct DateStripCalendarView: View {
             return
         }
 
-        let centerX = containerWidth / 2
+        let centerX =
+            containerWidth / 2
 
         guard let closest = positions.min(
             by: {
@@ -196,10 +237,17 @@ public struct DateStripCalendarView: View {
             return
         }
 
-        scrollReportedDate = closest.date
-        displayedDate = closest.date
+        scrollReportedDate =
+            closest.date
+
+        displayedDate =
+            closest.date
+
+        onDisplayedDateChange(
+            closest.date
+        )
     }
-    
+
     private func contains(
         _ date: Date,
         in days: [CalendarDay],
