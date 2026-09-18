@@ -17,7 +17,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
     let highlightedDates: Set<Date>
     let configuration: CalendarConfiguration
     let style: CalendarStyle
-    let options: InfiniteDateStripCalendarOptions
+    let options: DateStripCalendarOptions
     let onSelectDate: (Date) -> Void
     let onDisplayedDateChange: (Date) -> Void
     

@@ -39,41 +39,50 @@ struct ContentView: View {
         
         
         DateStripCalendarView(
-            displayedDate: $displayedWeekDate,
-            selectedDate: $selectedWeekDate,
-            highlightedDates: highlightedDates,
-            configuration: CalendarConfiguration(
-                locale: .korea,
-                timeZone: .seoul,
-                weekStart: .sunday
-            ),
+            displayedDate:
+                $displayedWeekDate,
+            selectedDate:
+                $selectedWeekDate,
+            range: .infinite,
+            highlightedDates:
+                highlightedDates,
+            configuration:
+                CalendarConfiguration(
+                    locale: .korea,
+                    timeZone: .seoul,
+                    weekStart: .sunday
+                ),
             onSelectDate: { date in
-                print("DateStrip selected:", date)
+                print(
+                    "Selected:",
+                    date
+                )
             },
             onDisplayedDateChange: { date in
-                print("DateStrip displayed:", date)
+                print(
+                    "Displayed:",
+                    date
+                )
             }
         )
         .padding()
         
-        InfiniteDateStripCalendarView(
-            displayedDate: $displayedInfiniteDate,
-            selectedDate: $selectedInfiniteDate,
-            highlightedDates: highlightedDates,
-            configuration: CalendarConfiguration(
-                locale: .korea,
-                timeZone: .seoul,
-                weekStart: .sunday
-            ),
-            onSelectDate: { date in
-                print("Infinite selected:", date)
-            },
-            onDisplayedDateChange: { date in
-                print("Infinite displayed:", date)
-            }
-        )
-        .frame(height: 80)
-        .padding()
+//        DateStripCalendarView(
+//            displayedDate:
+//                $displayedWeekDate,
+//            selectedDate:
+//                $selectedWeekDate
+//        )
+//        DateStripCalendarView(
+//            displayedDate:
+//                $displayedWeekDate,
+//            selectedDate:
+//                $selectedWeekDate,
+//            range: .limited(
+//                pastDays: 365,
+//                futureDays: 30
+//            )
+//        )
         
         Button("Infinite Today") {
             displayedInfiniteDate = Date()
