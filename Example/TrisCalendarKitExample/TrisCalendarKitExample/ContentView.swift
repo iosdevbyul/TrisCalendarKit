@@ -133,3 +133,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+//git commit -m "Refactor - tighten TrisCalendarKit public API" \
+//-m "Expose only reusable calendar configuration and view types while keeping implementation details internal"

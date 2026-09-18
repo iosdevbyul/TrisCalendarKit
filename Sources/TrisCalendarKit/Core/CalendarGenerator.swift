@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CalendarGenerator {
+struct CalendarGenerator {
     private let configuration: CalendarConfiguration
 
     public init(

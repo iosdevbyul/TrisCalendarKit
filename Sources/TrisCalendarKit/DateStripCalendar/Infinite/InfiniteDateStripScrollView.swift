@@ -116,13 +116,11 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             self.lastSelectedDate =
                 parent.selectedDate
 
-            let normalizedHighlights = Set(
-                parent.highlightedDates.map {
-                    calendar.startOfDay(
-                        for: $0
-                    )
-                }
-            )
+            let normalizedHighlights =
+                CalendarDateUtility.normalize(
+                    parent.highlightedDates,
+                    calendar: calendar
+                )
 
             self.normalizedHighlightedDates =
                 normalizedHighlights
@@ -231,13 +229,11 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             let calendar =
                 parent.configuration.configuredCalendar
 
-            let currentNormalizedHighlights = Set(
-                parent.highlightedDates.map {
-                    calendar.startOfDay(
-                        for: $0
-                    )
-                }
-            )
+            let currentNormalizedHighlights =
+                CalendarDateUtility.normalize(
+                    parent.highlightedDates,
+                    calendar: calendar
+                )
 
             let selectedDateChanged =
                 lastSelectedDate
@@ -451,18 +447,15 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             let calendar =
                 parent.configuration.configuredCalendar
 
-            let normalizedDate =
-                calendar.startOfDay(
-                    for: date
-                )
-
             cell.configure(
                 date: date,
                 calendar: calendar,
                 selectedDate: parent.selectedDate,
                 isHighlighted:
-                    normalizedHighlightedDates.contains(
-                        normalizedDate
+                    CalendarDateUtility.contains(
+                        date,
+                        in: normalizedHighlightedDates,
+                        calendar: calendar
                     ),
                 style: parent.style
             )

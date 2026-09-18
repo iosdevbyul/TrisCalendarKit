@@ -7,22 +7,12 @@
 
 import Foundation
 
-public struct CalendarDay: Identifiable, Hashable {
-    public let date: Date
-    public let isCurrentMonth: Bool
-    public let isToday: Bool
+struct CalendarDay: Identifiable, Hashable {
+    let date: Date
+    let isCurrentMonth: Bool
+    let isToday: Bool
 
-    public var id: Date {
+    var id: Date {
         date
-    }
-
-    public init(
-        date: Date,
-        isCurrentMonth: Bool,
-        isToday: Bool
-    ) {
-        self.date = date
-        self.isCurrentMonth = isCurrentMonth
-        self.isToday = isToday
     }
 }

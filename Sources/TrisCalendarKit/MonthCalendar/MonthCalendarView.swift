@@ -53,10 +53,11 @@ public struct MonthCalendarView: View {
             for: displayedMonth
         )
         
-        let normalizedHighlightedDates = MonthCalendarLogic.normalizedDates(
-            highlightedDates,
-            calendar: calendar
-        )
+        let normalizedHighlightedDates =
+            CalendarDateUtility.normalize(
+                highlightedDates,
+                calendar: calendar
+            )
 
         VStack(spacing: style.sectionSpacing) {
             MonthCalendarHeader(
@@ -107,11 +108,12 @@ public struct MonthCalendarView: View {
                                     day.date,
                                     calendar: calendar
                                 ),
-                                isHighlighted: MonthCalendarLogic.isHighlighted(
-                                    day.date,
-                                    highlightedDates: normalizedHighlightedDates,
-                                    calendar: calendar
-                                ),
+                                isHighlighted:
+                                    CalendarDateUtility.contains(
+                                        day.date,
+                                        in: normalizedHighlightedDates,
+                                        calendar: calendar
+                                    ),
                                 style: style
                             )
                         }

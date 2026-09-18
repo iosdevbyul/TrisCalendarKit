@@ -78,13 +78,11 @@ struct LimitedDateStripView: View {
             futureDays: futureDays
         )
 
-        let normalizedHighlightedDates = Set(
-            highlightedDates.map {
-                calendar.startOfDay(
-                    for: $0
-                )
-            }
-        )
+        let normalizedHighlightedDates =
+            CalendarDateUtility.normalize(
+                highlightedDates,
+                calendar: calendar
+            )
 
         GeometryReader { geometry in
             let cellWidth =
@@ -118,12 +116,11 @@ struct LimitedDateStripView: View {
                                                 calendar
                                         ),
                                     isHighlighted:
-                                        normalizedHighlightedDates
-                                            .contains(
-                                                calendar.startOfDay(
-                                                    for: day.date
-                                                )
-                                            ),
+                                        CalendarDateUtility.contains(
+                                            day.date,
+                                            in: normalizedHighlightedDates,
+                                            calendar: calendar
+                                        ),
                                     style: style
                                 )
                                 .frame(

@@ -20,27 +20,6 @@ struct MonthCalendarLogic {
         return behavior == .navigate
     }
 
-    static func normalizedDates(
-        _ dates: Set<Date>,
-        calendar: Calendar
-    ) -> Set<Date> {
-        Set(
-            dates.map {
-                calendar.startOfDay(for: $0)
-            }
-        )
-    }
-
-    static func isHighlighted(
-        _ date: Date,
-        highlightedDates: Set<Date>,
-        calendar: Calendar
-    ) -> Bool {
-        highlightedDates.contains(
-            calendar.startOfDay(for: date)
-        )
-    }
-
     static func weekdaySymbols(
         calendar: Calendar
     ) -> [String] {
