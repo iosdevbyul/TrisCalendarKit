@@ -19,7 +19,8 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
     let style: CalendarStyle
     let options: InfiniteDateStripCalendarOptions
     let onSelectDate: (Date) -> Void
-
+    let onDisplayedDateChange: (Date) -> Void
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
@@ -358,6 +359,7 @@ struct InfiniteDateStripScrollView: UIViewRepresentable {
             }
 
             parent.displayedDate = date
+            parent.onDisplayedDateChange(date)
         }
 
         // MARK: - Infinite Recentering

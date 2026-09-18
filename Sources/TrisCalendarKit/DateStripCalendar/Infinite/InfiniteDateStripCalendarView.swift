@@ -12,7 +12,9 @@ public struct InfiniteDateStripCalendarView: View {
     private let configuration: CalendarConfiguration
     private let style: CalendarStyle
     private let options: InfiniteDateStripCalendarOptions
+
     private let onSelectDate: (Date) -> Void
+    private let onDisplayedDateChange: (Date) -> Void
 
     @Binding private var displayedDate: Date
     @Binding private var selectedDate: Date?
@@ -24,7 +26,8 @@ public struct InfiniteDateStripCalendarView: View {
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
         options: InfiniteDateStripCalendarOptions = InfiniteDateStripCalendarOptions(),
-        onSelectDate: @escaping (Date) -> Void = { _ in }
+        onSelectDate: @escaping (Date) -> Void = { _ in },
+        onDisplayedDateChange: @escaping (Date) -> Void = { _ in }
     ) {
         self._displayedDate = displayedDate
         self._selectedDate = selectedDate
@@ -33,6 +36,7 @@ public struct InfiniteDateStripCalendarView: View {
         self.style = style
         self.options = options
         self.onSelectDate = onSelectDate
+        self.onDisplayedDateChange = onDisplayedDateChange
     }
 
     public var body: some View {
@@ -43,7 +47,8 @@ public struct InfiniteDateStripCalendarView: View {
             configuration: configuration,
             style: style,
             options: options,
-            onSelectDate: onSelectDate
+            onSelectDate: onSelectDate,
+            onDisplayedDateChange: onDisplayedDateChange
         )
     }
 }

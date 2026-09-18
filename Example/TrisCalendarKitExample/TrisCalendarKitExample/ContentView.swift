@@ -64,6 +64,9 @@ struct ContentView: View {
             ),
             onSelectDate: { date in
                 print("Infinite selected:", date)
+            },
+            onDisplayedDateChange: { date in
+                print("Infinite displayed:", date)
             }
         )
         .frame(height: 80)
