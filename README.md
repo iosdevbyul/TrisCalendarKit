@@ -34,11 +34,20 @@ The host application decides what each date represents.
 
 ### Swift Package Manager
 
-Add `TrisCalendarKit` as a Swift Package dependency in Xcode.
+Add `TrisCalendarKit` as a Swift Package dependency in Xcode and select the released version starting from `1.0.0`.
 
 ```text
 File
 → Add Package Dependencies...
+```
+
+For a `Package.swift` dependency:
+
+```swift
+.package(
+    url: "https://github.com/iosdevbyul/TrisCalendarKit",
+    from: "1.0.0"
+)
 ```
 
 For local development, you can also add the package using:
