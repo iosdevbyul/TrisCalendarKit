@@ -16,6 +16,9 @@ public struct CalendarStyle {
     public var currentMonthTextColor: Color
     public var adjacentMonthTextColor: Color
 
+    public var weekdaySaturdayColor: Color?
+    public var weekdaySundayColor: Color?
+
     public var todayBorderColor: Color
 
     public var dayFont: Font
@@ -33,6 +36,8 @@ public struct CalendarStyle {
         currentMonthTextColor: Color = .primary,
         adjacentMonthTextColor: Color = .secondary,
         todayBorderColor: Color = .blue,
+        weekdaySaturdayColor: Color? = nil,
+        weekdaySundayColor: Color? = nil,
         dayFont: Font = .system(size: 14, weight: .medium),
         weekdayFont: Font = .system(size: 12, weight: .medium),
         headerFont: Font = .system(size: 18, weight: .semibold),
@@ -46,6 +51,8 @@ public struct CalendarStyle {
         self.currentMonthTextColor = currentMonthTextColor
         self.adjacentMonthTextColor = adjacentMonthTextColor
         self.todayBorderColor = todayBorderColor
+        self.weekdaySaturdayColor = weekdaySaturdayColor
+        self.weekdaySundayColor = weekdaySundayColor
         self.dayFont = dayFont
         self.weekdayFont = weekdayFont
         self.headerFont = headerFont
