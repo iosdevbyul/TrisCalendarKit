@@ -14,28 +14,39 @@ struct MonthDayCell: View {
     let isHighlighted: Bool
     let style: CalendarStyle
     let dateTextColor: Color?
+    let dateLabel: String?
+    let showsDateLabels: Bool
 
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(backgroundColor)
-
-            if day.isToday && !isSelected {
+        VStack(spacing: 2) {
+            ZStack {
                 Circle()
-                    .stroke(
-                        style.todayBorderColor,
-                        lineWidth: 1
-                    )
-            }
+                    .fill(backgroundColor)
 
-            Text(dayText)
-                .font(style.dayFont)
-                .foregroundColor(textColor)
+                if day.isToday && !isSelected {
+                    Circle()
+                        .stroke(style.todayBorderColor, lineWidth: 1)
+                }
+
+                Text(dayText)
+                    .font(style.dayFont)
+                    .foregroundColor(textColor)
+            }
+            .frame(width: style.dayCellSize, height: style.dayCellSize)
+
+            if showsDateLabels {
+                Text(dateLabel ?? " ")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(dateTextColor ?? .secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .frame(maxWidth: .infinity)
+                    .accessibilityHidden(dateLabel == nil)
+            }
         }
-        .frame(
-            width: style.dayCellSize,
-            height: style.dayCellSize
-        )
+        .frame(maxWidth: .infinity)
+        .frame(height: showsDateLabels ? style.dayCellSize + 18 : style.dayCellSize)
+        .accessibilityElement(children: .combine)
     }
 
     private var dayText: String {

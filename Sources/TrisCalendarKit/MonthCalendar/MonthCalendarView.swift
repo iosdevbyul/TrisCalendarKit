@@ -11,6 +11,7 @@ public struct MonthCalendarView: View {
     private let configuration: CalendarConfiguration
     private let highlightedDates: Set<Date>
     private let dateTextColors: [Date: Color]
+    private let dateLabels: [Date: String]
     private let onSelectDate: (Date) -> Void
 
     @Binding private var selectedDate: Date?
@@ -26,6 +27,7 @@ public struct MonthCalendarView: View {
         selectedDate: Binding<Date?>,
         highlightedDates: Set<Date> = [],
         dateTextColors: [Date: Color] = [:],
+        dateLabels: [Date: String] = [:],
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
         options: MonthCalendarOptions = MonthCalendarOptions(),
@@ -37,6 +39,7 @@ public struct MonthCalendarView: View {
         self._selectedDate = selectedDate
         self.highlightedDates = highlightedDates
         self.dateTextColors = dateTextColors
+        self.dateLabels = dateLabels
         self.configuration = configuration
         self.style = style
         self.options = options
@@ -63,6 +66,10 @@ public struct MonthCalendarView: View {
             )
 
         let normalizedDateTextColors = Dictionary(dateTextColors.map {
+            (calendar.startOfDay(for: $0.key), $0.value)
+        }, uniquingKeysWith: { _, latest in latest })
+
+        let normalizedDateLabels = Dictionary(dateLabels.map {
             (calendar.startOfDay(for: $0.key), $0.value)
         }, uniquingKeysWith: { _, latest in latest })
 
@@ -122,7 +129,9 @@ public struct MonthCalendarView: View {
                                         calendar: calendar
                                     ),
                                 style: style,
-                                dateTextColor: normalizedDateTextColors[calendar.startOfDay(for: day.date)]
+                                dateTextColor: normalizedDateTextColors[calendar.startOfDay(for: day.date)],
+                                dateLabel: day.isCurrentMonth ? normalizedDateLabels[calendar.startOfDay(for: day.date)] : nil,
+                                showsDateLabels: !normalizedDateLabels.isEmpty
                             )
                         }
                         .buttonStyle(.plain)
@@ -130,7 +139,7 @@ public struct MonthCalendarView: View {
                         Color.clear
                             .frame(
                                 width: style.dayCellSize,
-                                height: style.dayCellSize
+                                height: !normalizedDateLabels.isEmpty ? style.dayCellSize + 18 : style.dayCellSize
                             )
                     }
                 }
