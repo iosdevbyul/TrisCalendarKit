@@ -10,6 +10,7 @@ import SwiftUI
 public struct MonthCalendarView: View {
     private let configuration: CalendarConfiguration
     private let highlightedDates: Set<Date>
+    private let dateTextColors: [Date: Color]
     private let onSelectDate: (Date) -> Void
 
     @Binding private var selectedDate: Date?
@@ -24,6 +25,7 @@ public struct MonthCalendarView: View {
         displayedMonth: Binding<Date>,
         selectedDate: Binding<Date?>,
         highlightedDates: Set<Date> = [],
+        dateTextColors: [Date: Color] = [:],
         configuration: CalendarConfiguration = CalendarConfiguration(),
         style: CalendarStyle = CalendarStyle(),
         options: MonthCalendarOptions = MonthCalendarOptions(),
@@ -34,6 +36,7 @@ public struct MonthCalendarView: View {
         self._displayedMonth = displayedMonth
         self._selectedDate = selectedDate
         self.highlightedDates = highlightedDates
+        self.dateTextColors = dateTextColors
         self.configuration = configuration
         self.style = style
         self.options = options
@@ -58,6 +61,10 @@ public struct MonthCalendarView: View {
                 highlightedDates,
                 calendar: calendar
             )
+
+        let normalizedDateTextColors = Dictionary(dateTextColors.map {
+            (calendar.startOfDay(for: $0.key), $0.value)
+        }, uniquingKeysWith: { _, latest in latest })
 
         VStack(spacing: style.sectionSpacing) {
             MonthCalendarHeader(
@@ -114,7 +121,8 @@ public struct MonthCalendarView: View {
                                         in: normalizedHighlightedDates,
                                         calendar: calendar
                                     ),
-                                style: style
+                                style: style,
+                                dateTextColor: normalizedDateTextColors[calendar.startOfDay(for: day.date)]
                             )
                         }
                         .buttonStyle(.plain)
