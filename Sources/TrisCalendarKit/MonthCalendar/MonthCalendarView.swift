@@ -130,7 +130,8 @@ public struct MonthCalendarView: View {
                                     ),
                                 style: style,
                                 dateTextColor: normalizedDateTextColors[calendar.startOfDay(for: day.date)],
-                                dateLabel: day.isCurrentMonth ? normalizedDateLabels[calendar.startOfDay(for: day.date)] : nil
+                                dateLabel: day.isCurrentMonth ? normalizedDateLabels[calendar.startOfDay(for: day.date)] : nil,
+                                showsDateLabels: !normalizedDateLabels.isEmpty
                             )
                         }
                         .buttonStyle(.plain)
@@ -138,7 +139,7 @@ public struct MonthCalendarView: View {
                         Color.clear
                             .frame(
                                 width: style.dayCellSize,
-                                height: style.dayCellSize
+                                height: !normalizedDateLabels.isEmpty ? style.dayCellSize + 18 : style.dayCellSize
                             )
                     }
                 }
