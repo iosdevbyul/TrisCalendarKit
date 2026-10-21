@@ -13,6 +13,7 @@ struct MonthDayCell: View {
     let isSelected: Bool
     let isHighlighted: Bool
     let style: CalendarStyle
+    let dateTextColor: Color?
 
     var body: some View {
         ZStack {
@@ -64,7 +65,7 @@ struct MonthDayCell: View {
         }
 
         if day.isCurrentMonth {
-            return style.currentMonthTextColor
+            return dateTextColor ?? style.currentMonthTextColor
         }
 
         return style.adjacentMonthTextColor
