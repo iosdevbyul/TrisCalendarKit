@@ -12,6 +12,7 @@ struct MonthDayCell: View {
     let calendar: Calendar
     let isSelected: Bool
     let isHighlighted: Bool
+    let isOutlined: Bool
     let style: CalendarStyle
     let dateTextColor: Color?
     let dateLabel: String?
@@ -23,7 +24,12 @@ struct MonthDayCell: View {
                 Circle()
                     .fill(backgroundColor)
 
-                if day.isToday && !isSelected {
+                if isOutlined && !isSelected {
+                    Circle()
+                        .stroke(style.selectedBackgroundColor, lineWidth: 1.5)
+                }
+
+                if day.isToday && !isSelected && !isOutlined {
                     Circle()
                         .stroke(style.todayBorderColor, lineWidth: 1)
                 }
@@ -38,14 +44,15 @@ struct MonthDayCell: View {
                 Text(dateLabel ?? " ")
                     .font(.system(size: 9, weight: .medium))
                     .foregroundColor(dateTextColor ?? .secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                    .frame(maxWidth: .infinity)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, minHeight: 27)
                     .accessibilityHidden(dateLabel == nil)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: showsDateLabels ? style.dayCellSize + 18 : style.dayCellSize)
+        .frame(height: showsDateLabels ? style.dayCellSize + 30 : style.dayCellSize)
         .accessibilityElement(children: .combine)
     }
 
