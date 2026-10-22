@@ -10,6 +10,7 @@ import SwiftUI
 public struct MonthCalendarView: View {
     private let configuration: CalendarConfiguration
     private let highlightedDates: Set<Date>
+    private let outlinedDates: Set<Date>
     private let dateTextColors: [Date: Color]
     private let dateLabels: [Date: String]
     private let onSelectDate: (Date) -> Void
@@ -26,6 +27,7 @@ public struct MonthCalendarView: View {
         displayedMonth: Binding<Date>,
         selectedDate: Binding<Date?>,
         highlightedDates: Set<Date> = [],
+        outlinedDates: Set<Date> = [],
         dateTextColors: [Date: Color] = [:],
         dateLabels: [Date: String] = [:],
         configuration: CalendarConfiguration = CalendarConfiguration(),
@@ -38,6 +40,7 @@ public struct MonthCalendarView: View {
         self._displayedMonth = displayedMonth
         self._selectedDate = selectedDate
         self.highlightedDates = highlightedDates
+        self.outlinedDates = outlinedDates
         self.dateTextColors = dateTextColors
         self.dateLabels = dateLabels
         self.configuration = configuration
@@ -64,6 +67,10 @@ public struct MonthCalendarView: View {
                 highlightedDates,
                 calendar: calendar
             )
+
+        let normalizedOutlinedDates = CalendarDateUtility.normalize(
+            outlinedDates, calendar: calendar
+        )
 
         let normalizedDateTextColors = Dictionary(dateTextColors.map {
             (calendar.startOfDay(for: $0.key), $0.value)
@@ -128,6 +135,11 @@ public struct MonthCalendarView: View {
                                         in: normalizedHighlightedDates,
                                         calendar: calendar
                                     ),
+                                isOutlined: !CalendarDateUtility.contains(
+                                    day.date, in: normalizedHighlightedDates, calendar: calendar
+                                ) && CalendarDateUtility.contains(
+                                    day.date, in: normalizedOutlinedDates, calendar: calendar
+                                ),
                                 style: style,
                                 dateTextColor: normalizedDateTextColors[calendar.startOfDay(for: day.date)],
                                 dateLabel: day.isCurrentMonth ? normalizedDateLabels[calendar.startOfDay(for: day.date)] : nil,
@@ -139,7 +151,7 @@ public struct MonthCalendarView: View {
                         Color.clear
                             .frame(
                                 width: style.dayCellSize,
-                                height: !normalizedDateLabels.isEmpty ? style.dayCellSize + 18 : style.dayCellSize
+                                height: !normalizedDateLabels.isEmpty ? style.dayCellSize + 30 : style.dayCellSize
                             )
                     }
                 }
