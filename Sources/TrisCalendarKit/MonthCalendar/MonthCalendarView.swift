@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import UIKit
 
 public struct MonthCalendarView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var todayToken = Calendar.current.startOfDay(for: .now)
+
     private let configuration: CalendarConfiguration
     private let highlightedDates: Set<Date>
     private let outlinedDates: Set<Date>
@@ -156,6 +160,33 @@ public struct MonthCalendarView: View {
                     }
                 }
             }
+        }
+        .id(todayToken)
+        .task { await monitorDayChange() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { updateTodayToken() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
+            updateTodayToken()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+            updateTodayToken()
+        }
+    }
+
+    private func updateTodayToken() {
+        let day = configuration.configuredCalendar.startOfDay(for: .now)
+        if todayToken != day { todayToken = day }
+    }
+
+    @MainActor
+    private func monitorDayChange() async {
+        while !Task.isCancelled {
+            guard let nextDay = configuration.configuredCalendar.dateInterval(of: .day, for: .now)?.end else { return }
+            do {
+                try await Task.sleep(for: .seconds(max(0.05, nextDay.timeIntervalSinceNow)))
+            } catch { return }
+            updateTodayToken()
         }
     }
 
