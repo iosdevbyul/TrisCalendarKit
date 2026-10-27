@@ -163,7 +163,7 @@ public struct MonthCalendarView: View {
         }
         .id(todayToken)
         .task { await monitorDayChange() }
-        .onChange(of: scenePhase) { _, phase in
+        .onChange(of: scenePhase) { phase in
             if phase == .active { updateTodayToken() }
         }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
