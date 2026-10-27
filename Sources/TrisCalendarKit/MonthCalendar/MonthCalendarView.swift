@@ -184,7 +184,8 @@ public struct MonthCalendarView: View {
         while !Task.isCancelled {
             guard let nextDay = configuration.configuredCalendar.dateInterval(of: .day, for: .now)?.end else { return }
             do {
-                try await Task.sleep(for: .seconds(max(0.05, nextDay.timeIntervalSinceNow)))
+                let seconds = max(0.05, nextDay.timeIntervalSinceNow)
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             } catch { return }
             updateTodayToken()
         }
